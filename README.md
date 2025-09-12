@@ -19,6 +19,21 @@ npm --prefix ui install
 npm run dev
 ```
 
+### Using IPC from the renderer (prototype)
+
+In your React code, call the bridged API exposed by `preload`:
+
+```ts
+// Exec (aggregated output)
+const { code, stdout, stderr } = await window.api.exec('echo', ['hello'])
+
+// Spawn (streaming)
+const { runId } = await window.api.spawn('bash', ['-lc', 'for i in {1..3}; do echo $i; sleep 1; done'])
+const offOut = window.api.onSpawnStdout(({ runId: id, chunk }) => { if (id === runId) console.log('out', chunk) })
+const offErr = window.api.onSpawnStderr(({ runId: id, chunk }) => { if (id === runId) console.error('err', chunk) })
+const offClose = window.api.onSpawnClose(({ runId: id, code }) => { if (id === runId) console.log('closed', code) })
+```
+
 ### Packaging
 
 ```bash
